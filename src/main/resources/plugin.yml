@@ -2,15 +2,19 @@ name: JoustingPlugin
 version: 1.0.0
 main: com.jousting.JoustingPlugin
 api-version: 1.21
-description: A jousting plugin with lance system, momentum, and knockoff mechanics
+description: Horse combat system with lance tiers, durability, momentum, shields, and jousting/PvP modes
 authors:
   - k4nefr-cmd
+  - GorrGodSlayer
 commands:
   jousting:
     description: Jousting plugin commands
-    usage: /jousting reload
+    usage: /jousting <reload|give iron|gold|diamond>
     permission: jousting.admin
 permissions:
   jousting.admin:
     description: Permission to use jousting admin commands
     default: op
+  jousting.use:
+    description: Permission to wield lances in combat
+    default: true

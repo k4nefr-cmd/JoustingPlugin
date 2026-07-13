@@ -1,23 +1,102 @@
-# Jousting Plugin Configuration
+# ============================================================
+#  Jousting / Horse Combat System Configuration
+# ============================================================
 
-# Lance item (default: END_ROD)
-lance-item: END_ROD
+# --- Lance tiers -------------------------------------------------
+# Lances are the in-game craftable SPEARS (Mounts of Mayhem update). Any spear a player
+# crafts and wields while mounted is treated as a lance — no /jousting give required.
+# Map each tier to its base material here:
+#   Iron Lance    -> IRON_SPEAR
+#   Gold Lance    -> GOLDEN_SPEAR
+#   Diamond Lance -> DIAMOND_SPEAR
+# damage-bonus = flat hearts added on top of the horse-speed cap (before the hard cap).
+# max-uses     = successful lance hits before it breaks.
+# You can add the other spear tiers too (WOODEN_SPEAR, STONE_SPEAR, COPPER_SPEAR,
+# NETHERITE_SPEAR) — any material listed here counts as a lance.
+lance-tiers:
+  IRON_SPEAR:
+    damage-bonus: 0.0
+    max-uses: 10
+  GOLDEN_SPEAR:
+    damage-bonus: 1.0
+    max-uses: 14
+  DIAMOND_SPEAR:
+    damage-bonus: 2.0
+    max-uses: 18
 
-# Speed tier detection (blocks per second threshold)
-high-tier-speed-threshold: 1.5
+# Global fallback for any tier missing its own max-uses.
+lance-max-uses: 10
 
-# Damage values
+# Cooldown (milliseconds) after a lance hits a player or is blocked by a shield.
+# During cooldown the lance deals no damage.
+lance-cooldown-ms: 1500
+
+# --- Horse speed tiers ------------------------------------------
+# Horse movement-speed attribute thresholds:
+#   SLOW   : speed < medium-tier-speed-threshold
+#   MEDIUM : medium-tier-speed-threshold <= speed < high-tier-speed-threshold
+#   FAST   : speed >= high-tier-speed-threshold
+medium-tier-speed-threshold: 0.2
+high-tier-speed-threshold: 0.28
+
+# Damage caps (hearts) by horse speed tier.
 low-tier-max-damage: 3.0
+medium-tier-max-damage: 5.0
 high-tier-max-damage: 6.0
 
-# Minimum momentum distance (blocks traveled before damage applies)
+# --- Momentum ---------------------------------------------------
+# Minimum horse velocity (blocks/tick) required to build momentum.
+# Below this, momentum bleeds away at momentum-decay-per-tick (prevents running in place).
+minimum-run-speed: 0.15
+
+# Fraction of each tick's movement credited as momentum. 0.5 = the charge takes
+# twice as much riding to fill; 1.0 = every block ridden counts.
+momentum-gain-multiplier: 0.5
+
+# Momentum is bounded by straight-line displacement from where the charge began,
+# so circling a target can't build a full charge — only an actual run-up can.
+
+# Minimum distance (blocks) travelled before any damage is dealt.
 minimum-momentum-distance: 5.0
 
-# Knockoff probabilities
-knockoff-chance-zero-momentum: 5
-knockoff-chance-full-momentum: 70
+# Distance (blocks) at which momentum is "full" (bar full, cap reached).
+# Must be greater than minimum-momentum-distance, or the lance would never deal damage.
+full-momentum-distance: 15.0
 
-# Sounds (use Minecraft sound keys)
+# How fast momentum bleeds away (blocks/tick) when the horse slows below run speed.
+momentum-decay-per-tick: 0.5
+
+# --- Damage balancing -------------------------------------------
+# Absolute ceiling (HEARTS) on a single lance hit, so a charge can never one-shot a
+# full-health (10-heart) player. Sharpness and Strength do NOT affect lance damage.
+final-damage-hard-cap: 9.0
+
+# --- Shield interaction -----------------------------------------
+# A raised shield only blocks lance hits from the victim's frontal 180-degree arc
+# (like vanilla); hits from behind go through. Unbreakable shields never wear, and
+# Unbreaking reduces durability loss.
+shield:
+  # Durability removed from the blocking shield per lance hit (before Unbreaking).
+  durability-damage: 50
+  # Whether a blocked hit puts the lance on cooldown.
+  cooldown-on-block: true
+  # Knockback still applied to a shielding target.
+  knockback-on-block: true
+
+# --- Knockoff (dismount) — JOUSTING mode only -------------------
+knockoff-chance-zero-momentum: 5
+knockoff-chance-full-momentum: 20
+
+# --- Knockback strength -----------------------------------------
+knockback-strength: 0.5
+
+# --- Sounds (Minecraft Sound enum names) ------------------------
 sounds:
-  hit: "entity.player.attack.strong"
-  knockoff: "entity.item.break"
+  hit: "ENTITY_PLAYER_ATTACK_STRONG"
+  knockoff: "ENTITY_ITEM_BREAK"
+  shield: "ITEM_SHIELD_BLOCK"
+  break: "ENTITY_ITEM_BREAK"
+
+# --- Debug ------------------------------------------------------
+# Message the attacker on each lance hit with damage (hearts), momentum %, and tiers.
+debug-damage: false
